@@ -1,0 +1,28 @@
+{
+    "name": "dzarezenko/hitbtc-api",
+    "description": "PHP wrapper for the HitBTC API.",
+    "type": "library",
+    "keywords": ["hitbtc", "api"],
+    "homepage": "https://github.com/dzarezenko/hitbtc-api",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Dmytro Zarezenko",
+            "email": "dmytro.zarezenko@gmail.com",
+            "homepage": "https://github.com/dzarezenko",
+            "role": "Development"
+        }
+    ],
+    "support": {
+        "email": "dmytro.zarezenko@gmail.com"
+    },
+    "minimum-stability": "dev",
+    "require": {
+        "php": ">=5.6.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "hitbtc\\api\\": "src/"
+        }
+    }
+}
