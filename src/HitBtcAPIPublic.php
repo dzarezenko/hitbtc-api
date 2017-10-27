@@ -2,8 +2,6 @@
 
 namespace hitbtc\api;
 
-use hitbtc\api\tools\Request;
-
 /**
  * HitBTC Public API Methods.
  *
@@ -42,7 +40,7 @@ class HitBtcAPIPublic {
      * @return json
      */
     public function getTime() {
-        return Request::json('time', $this->isDemoAPI);
+        return $this->_request('time');
     }
 
     /**
@@ -52,7 +50,7 @@ class HitBtcAPIPublic {
      * @return json
      */
     public function getSymbols() {
-        return Request::json('symbols', $this->isDemoAPI);
+        return $this->_request('symbols');
     }
 
     /**
@@ -65,9 +63,7 @@ class HitBtcAPIPublic {
      * @return json
      */
     public function getTicker($symbol = null) {
-        return Request::json(
-            ($symbol ? "$symbol/" : "") . 'ticker', $this->isDemoAPI
-        );
+        return $this->_request('ticker', ($symbol ? "$symbol/" : "") . 'ticker');
     }
 
     /**
@@ -86,12 +82,11 @@ class HitBtcAPIPublic {
      * @return json
      */
     public function getOrderBook($symbol, $formatPrice = "string", $formatAmount = "string", $formatAmountUnit = "currency") {
-        return Request::json(
+        return $this->_request('orderbook',
             "{$symbol}/orderbook"
                 . "?format_price={$formatPrice}"
                 . "&format_amount={$formatAmount}"
-                . "&format_amount_unit={$formatAmountUnit}",
-            $this->isDemoAPI
+                . "&format_amount_unit={$formatAmountUnit}"
         );
     }
 
@@ -125,7 +120,7 @@ class HitBtcAPIPublic {
             $request.= "&{$param}={$value}";
         }
 
-        return Request::json($request, $this->isDemoAPI);
+        return $this->_request('trades', $request);
     }
 
     /**
@@ -147,7 +142,29 @@ class HitBtcAPIPublic {
                  . "&format_item={$formatItem}"
                  . "&side=" . ($side ? 'true' : 'false');
 
-        return Request::json($request, $this->isDemoAPI);
+        return $this->_request('trades', $request);
+    }
+
+    /**
+     * JSON request functionality wrapper.
+     *
+     * @param string $method API method name
+     * @param string $request API request
+     *
+     * @return array JSON data.
+     */
+    private function _request($method, $request = null) {
+        if (is_null($request)) {
+            $request = $method;
+        }
+
+        $response = tools\Request::json($request, $this->isDemoAPI);
+
+        if (isset($response[$method])) {
+            return $response[$method];
+        }
+
+        return $response;
     }
 
 }
