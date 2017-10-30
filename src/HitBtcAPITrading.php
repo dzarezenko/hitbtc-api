@@ -46,10 +46,10 @@ class HitBtcAPITrading {
      *
      * @param bool $hideZeroBalances Hide zero balances or not.
      *
-     * @return json
+     * @return array JSON data.
      */
     public function getBalances($hideZeroBalances = false) {
-        $balances = $this->request->exec('balance')['balance'];
+        $balances = $this->_request('balance');
         if ($hideZeroBalances) {
             return array_filter($balances, function ($e) {
                 return ($e['cash'] != 0 || $e['reserved'] != 0);
@@ -57,6 +57,54 @@ class HitBtcAPITrading {
         }
 
         return $balances;
+    }
+
+    /**
+     * Returns all orders in status new or partiallyFilled.
+     *
+     * @param string/array $symbols Comma-separated list of symbols or array of
+     *           symbols. Default - all symbols.
+     * @param string $clientOrderId Unique order ID.
+     *
+     * @return array JSON data.
+     */
+    public function getActiveOrders($symbols = null, $clientOrderId = null) {
+        $params = [];
+        if ($symbols) {
+            if (is_array($symbols)) {
+                $symbols = implode(",", $symbols);
+            }
+
+            $params['symbols'] = $symbols;
+        }
+
+        if ($clientOrderId) {
+            $params['clientOrderId'] = $clientOrderId;
+        }
+
+        return $this->_request('orders', "orders/active", $params);
+    }
+
+    /**
+     * JSON request functionality wrapper.
+     *
+     * @param string $method API method name
+     * @param string $request API request
+     *
+     * @return array JSON data.
+     */
+    private function _request($method, $request = null, $params = []) {
+        if (is_null($request)) {
+            $request = $method;
+        }
+
+        $response = $this->request->exec($request, $params);
+
+        if (isset($response[$method])) {
+            return $response[$method];
+        }
+
+        return $response;
     }
 
 }
