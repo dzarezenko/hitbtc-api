@@ -62,12 +62,12 @@ class Request {
      * Executes curl request to the HitBTC API.
      *
      * @param string $method API entrypoint method.
-     * @param array $arguments Request parameters list.
+     * @param array $params Request parameters list.
      *
      * @return array JSON data.
      * @throws \Exception If Curl error or HitBTC API error occurred.
      */
-    public function exec($method, array $arguments = [], $isPost = false) {
+    public function exec($method, array $params = [], $isPost = false) {
         usleep(100000);
 
         $requestUri = HitBtcAPIConf::TRADING_API_URL_SEGMENT
@@ -76,8 +76,7 @@ class Request {
                     . "&apikey=" . $this->apiKey;
 
         // generate the POST data string
-        $arguments = count($arguments) > 0 ? $arguments[0] : [];
-        $params = http_build_query($arguments);
+        $params = http_build_query($params);
         if (strlen($params) && $isPost === false) {
             $requestUri .= '&' . $params;
         }
@@ -91,8 +90,8 @@ class Request {
         curl_setopt(self::$ch, CURLOPT_RETURNTRANSFER, true);
 
         if ($isPost) {
-            curl_setopt($ch, CURLOPT_POST, true);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, $params);
+            curl_setopt(self::$ch, CURLOPT_POST, true);
+            curl_setopt(self::$ch, CURLOPT_POSTFIELDS, $params);
         }
 
         curl_setopt(self::$ch, CURLOPT_HTTPHEADER, [
