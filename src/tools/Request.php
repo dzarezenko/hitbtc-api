@@ -31,6 +31,13 @@ class Request {
     private $apiSecret = "";
 
     /**
+     * API version number.
+     *
+     * @var int
+     */
+    private $apiVersion = 2;
+
+    /**
      * Demo API flag.
      *
      * @var bool
@@ -49,35 +56,38 @@ class Request {
      *
      * @param string $apiKey HitBTC API Key value
      * @param string $apiSecret HitBTC API Secret value
+     * @param int $apiVersion API version number.
      * @param bool $isDemoAPI Demo API flag
      */
-    public function __construct($apiKey, $apiSecret, $isDemoAPI = false) {
+    public function __construct($apiKey, $apiSecret, $apiVersion = 2, $isDemoAPI = false) {
         $this->apiKey = $apiKey;
         $this->apiSecret = $apiSecret;
 
+        $this->apiVersion = $apiVersion;
         $this->isDemoAPI = $isDemoAPI;
     }
 
     /**
      * Executes curl request to the HitBTC API.
      *
-     * @param string $method API entrypoint method.
+     * @param string $request API entrypoint method.
      * @param array $params Request parameters list.
      *
      * @return array JSON data.
      * @throws \Exception If Curl error or HitBTC API error occurred.
      */
-    public function exec($method, array $params = [], $isPost = false) {
+    public function exec($request, array $params = [], $method = "GET") {
         usleep(100000);
 
-        $requestUri = HitBtcAPIConf::TRADING_API_URL_SEGMENT
-                    . $method
-                    . "?nonce=" . self::getNonce()
-                    . "&apikey=" . $this->apiKey;
+        $requestUri = HitBtcAPIConf::getAPIUrlSegment(HitBtcAPIConf::SEGMENT_TYPE_TRADING, $this->apiVersion)
+                    . $request;
+        if ($this->apiVersion == 1) {
+            $requestUri.= "?nonce=" . self::getNonce() . "&apikey=" . $this->apiKey;
+        }
 
         // generate the POST data string
         $params = http_build_query($params);
-        if (strlen($params) && $isPost === false) {
+        if (strlen($params) && $method === 'GET') {
             $requestUri .= '&' . $params;
         }
 
@@ -85,17 +95,21 @@ class Request {
         if (is_null(self::$ch)) {
             self::$ch = curl_init();
         }
-        curl_setopt(self::$ch, CURLOPT_URL, HitBtcAPIConf::getAPIUrl($this->isDemoAPI) . $requestUri);
+
+        if ($this->apiVersion == 2) {
+            curl_setopt(self::$ch, CURLOPT_USERPWD, $this->apiKey . ":" . $this->apiSecret);
+        }
+        curl_setopt(self::$ch, CURLOPT_URL, HitBtcAPIConf::getAPIUrl($this->apiVersion, $this->isDemoAPI) . $requestUri);
         curl_setopt(self::$ch, CURLOPT_CONNECTTIMEOUT, 10);
         curl_setopt(self::$ch, CURLOPT_RETURNTRANSFER, true);
 
-        if ($isPost) {
+        if ($method === 'POST') {
             curl_setopt(self::$ch, CURLOPT_POST, true);
             curl_setopt(self::$ch, CURLOPT_POSTFIELDS, $params);
         }
 
         curl_setopt(self::$ch, CURLOPT_HTTPHEADER, [
-            'X-Signature: ' . strtolower(hash_hmac('sha512', $requestUri . ($isPost ? $params : ''), $this->apiSecret))
+            'X-Signature: ' . strtolower(hash_hmac('sha512', $requestUri . (($method === 'POST') ? $params : ''), $this->apiSecret))
         ]);
 
         // run the query
@@ -123,16 +137,19 @@ class Request {
     /**
      * Executes simple GET request to the HitBtc public API.
      *
-     * @param string $method API entrypoint method.
+     * @param string $request API entrypoint method.
+     * @param int $apiVersion API version number.
      * @param bool $isDemoAPI Demo API flag.
      *
      * @return array JSON data.
      */
-    public static function json($method, $isDemoAPI = false) {
+    public static function json($request, $apiVersion = 2, $isDemoAPI = false) {
         $ch = curl_init();
 
         curl_setopt($ch, CURLOPT_URL,
-            HitBtcAPIConf::getAPIUrl($isDemoAPI) . HitBtcAPIConf::PUBLIC_API_URL_SEGMENT . $method
+            HitBtcAPIConf::getAPIUrl($apiVersion, $isDemoAPI)
+          . HitBtcAPIConf::getAPIUrlSegment(HitBtcAPIConf::SEGMENT_TYPE_PUBLIC, $apiVersion)
+          . $request
         );
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 

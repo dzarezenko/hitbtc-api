@@ -17,8 +17,11 @@ class HitBtcAPIConf {
     const URL_DEMO = "http://demo-api.hitbtc.com";
     const URL  = "http://api.hitbtc.com";
 
-    const PUBLIC_API_URL_SEGMENT = "/api/1/public/";
-    const TRADING_API_URL_SEGMENT = "/api/1/trading/";
+    const URL_DEMO_V2 = "https://demo-api.hitbtc.com";
+    const URL_V2  = "https://api.hitbtc.com";
+
+    const SEGMENT_TYPE_PUBLIC = 'public';
+    const SEGMENT_TYPE_TRADING = 'trading';
 
     /**
      * Returns HitBTC API URL.
@@ -27,8 +30,33 @@ class HitBtcAPIConf {
      *
      * @return string HitBTC API URL
      */
-    public static function getAPIUrl($isDemoAPI = false) {
-        return ($isDemoAPI ? self::URL_DEMO : self::URL);
+    public static function getAPIUrl($apiVersion = 2, $isDemoAPI = false) {
+        switch ($apiVersion) {
+            case 1:
+                return ($isDemoAPI ? self::URL_DEMO : self::URL);
+            case 2:
+                return ($isDemoAPI ? self::URL_DEMO_V2 : self::URL_V2);
+        }
+    }
+
+    /**
+     * Returns API URL segment for the API request.
+     *
+     * @param string $segmentType Segment type 'public' or 'trading'
+     * @param int $apiVersion API version number
+     *
+     * @return string API URL segment
+     */
+    public static function getAPIUrlSegment($segmentType, $apiVersion = 2) {
+        switch ($apiVersion) {
+            case 1:
+                return "/api/{$apiVersion}/{$segmentType}/";
+            case 2:
+                if ($segmentType === self::SEGMENT_TYPE_PUBLIC) {
+                    return "/api/{$apiVersion}/{$segmentType}/";
+                }
+                return "/api/{$apiVersion}/";
+        }
     }
 
 }
