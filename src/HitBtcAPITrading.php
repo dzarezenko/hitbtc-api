@@ -38,7 +38,7 @@ class HitBtcAPITrading {
         $this->apiKey = $apiKey;
         $this->apiSecret = $apiSecret;
 
-        $this->request = new Request($this->apiKey, $this->apiSecret, $isDemoAPI);
+        $this->request = new Request($this->apiKey, $this->apiSecret, $this->apiVersion, $isDemoAPI);
     }
 
     /**
@@ -49,11 +49,23 @@ class HitBtcAPITrading {
      * @return array JSON data.
      */
     public function getBalances($hideZeroBalances = false) {
-        $balances = $this->_request('balance');
-        if ($hideZeroBalances) {
-            return array_filter($balances, function ($e) {
-                return ($e['cash'] != 0 || $e['reserved'] != 0);
-            });
+        switch ($this->apiVersion) {
+            case 1:
+                $balances = $this->_request('balance');
+                if ($hideZeroBalances) {
+                    return array_filter($balances, function ($e) {
+                        return ($e['cash'] != 0 || $e['reserved'] != 0);
+                    });
+                }
+                break;
+            case 2:
+                $balances = $this->_request('balance', "trading/balance");
+                if ($hideZeroBalances) {
+                    return array_filter($balances, function ($e) {
+                        return ($e['available'] != 0 || $e['reserved'] != 0);
+                    });
+                }
+                break;
         }
 
         return $balances;
@@ -62,27 +74,22 @@ class HitBtcAPITrading {
     /**
      * Returns all orders in status new or partiallyFilled.
      *
-     * @param string/array $symbols Comma-separated list of symbols or array of
-     *           symbols. Default - all symbols.
      * @param string $clientOrderId Unique order ID.
      *
      * @return array JSON data.
      */
-    public function getActiveOrders($symbols = null, $clientOrderId = null) {
+    public function getActiveOrders($clientOrderId = null) {
         $params = [];
-        if ($symbols) {
-            if (is_array($symbols)) {
-                $symbols = implode(",", $symbols);
-            }
-
-            $params['symbols'] = $symbols;
-        }
-
         if ($clientOrderId) {
             $params['clientOrderId'] = $clientOrderId;
         }
 
-        return $this->_request('orders', "orders/active", $params);
+        switch ($this->apiVersion) {
+            case 1:
+                return $this->_request('orders', "orders/active", $params);
+            case 2:
+                return $this->_request('order', $clientOrderId ? "order/{$clientOrderId}" : null);
+        }
     }
 
     /**

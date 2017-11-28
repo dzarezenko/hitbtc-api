@@ -17,6 +17,13 @@ namespace hitbtc\api;
  * @license http://opensource.org/licenses/MIT
  */
 class HitBtcAPIPublic {
+    /**
+     * API version number.
+     *
+     * @var int
+     */
+    private $apiVersion = 2;
+
 
     /**
      * Demo API flag.
@@ -28,9 +35,11 @@ class HitBtcAPIPublic {
     /**
      * Constructor of the class.
      *
+     * @param int $apiVersion API version number.
      * @param bool $isDemoAPI Demo API flag
      */
-    public function __construct($isDemoAPI = false) {
+    public function __construct($apiVersion = 2, $isDemoAPI = false) {
+        $this->apiVersion = $apiVersion;
         $this->isDemoAPI = $isDemoAPI;
     }
 
@@ -54,6 +63,17 @@ class HitBtcAPIPublic {
     }
 
     /**
+     * Return the actual list of available currencies, tokens, ICO etc.
+     *
+     * @param string $currency Currency ID.
+     *
+     * @return array JSON data.
+     */
+    public function getCurrency($currency = null) {
+        return $this->_request('currency', ($currency) ? "currency/{$currency}" : null);
+    }
+
+    /**
      * Returns the actual data on exchange rates for all traded
      * cryptocurrencies - all tickers or specified cryptocurrency.
      *
@@ -63,7 +83,21 @@ class HitBtcAPIPublic {
      * @return json
      */
     public function getTicker($symbol = null) {
-        return $this->_request('ticker', ($symbol ? "$symbol/" : "") . 'ticker');
+        switch ($this->apiVersion) {
+            case 1:
+                return $this->_request('ticker', ($symbol ? "$symbol/" : "") . 'ticker');
+            case 2:
+                $ticker = $this->_request('ticker', "ticker/" . ($symbol ? "$symbol" : ""));
+                $assocTicker = []; // TODO: implement more efficient solution
+                foreach ($ticker as $tickerData) {
+                    if (isset($tickerData['symbol'])) {
+                        $assocTicker[$tickerData['symbol']] = $tickerData;
+                    }
+                }
+                unset($ticker);
+
+                return $assocTicker;
+        }
     }
 
     /**
@@ -158,7 +192,7 @@ class HitBtcAPIPublic {
             $request = $method;
         }
 
-        $response = tools\Request::json($request, $this->isDemoAPI);
+        $response = tools\Request::json($request, $this->apiVersion, $this->isDemoAPI);
 
         if (isset($response[$method])) {
             return $response[$method];
