@@ -55,6 +55,7 @@ class HitBtcAPIConf {
                 if ($segmentType === self::SEGMENT_TYPE_PUBLIC) {
                     return "/api/{$apiVersion}/{$segmentType}/";
                 }
+
                 return "/api/{$apiVersion}/";
         }
     }

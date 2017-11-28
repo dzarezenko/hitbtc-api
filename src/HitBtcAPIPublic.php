@@ -24,7 +24,6 @@ class HitBtcAPIPublic {
      */
     private $apiVersion = 2;
 
-
     /**
      * Demo API flag.
      *
