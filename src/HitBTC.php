@@ -14,6 +14,13 @@ namespace hitbtc\api;
  */
 class HitBTC extends HitBtcAPITrading {
     /**
+     * API version number.
+     *
+     * @var int
+     */
+    protected $apiVersion = 2;
+
+    /**
      * Demo API flag.
      *
      * @var bool
@@ -48,17 +55,19 @@ class HitBTC extends HitBtcAPITrading {
      *
      * @param string $apiKey HitBTC API key
      * @param string $apiSecret HitBTC API secret
+     * @param int $apiVersion API version number.
      * @param bool $isDemoAPI Demo API flag
      *
      * @return
      */
-    public function __construct($apiKey = null, $apiSecret = null, $isDemoAPI = false) {
+    public function __construct($apiKey = null, $apiSecret = null, $apiVersion = 2, $isDemoAPI = false) {
         if (is_null($apiKey) || is_null($apiSecret)) {
             return;
         }
 
+        $this->apiVersion = $apiVersion;
         $this->isDemoAPI = $isDemoAPI;
-        $this->publicAPI = new HitBtcAPIPublic($isDemoAPI);
+        $this->publicAPI = new HitBtcAPIPublic($this->apiVersion, $isDemoAPI);
 
         return parent::__construct($apiKey, $apiSecret, $isDemoAPI);
     }
