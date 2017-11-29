@@ -72,6 +72,7 @@ class Request {
      *
      * @param string $request API entrypoint method.
      * @param array $params Request parameters list.
+     * @param string $method HTTP method (default: 'GET').
      *
      * @return array JSON data.
      * @throws \Exception If Curl error or HitBTC API error occurred.
