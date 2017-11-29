@@ -26,7 +26,8 @@ class HitBtcAPIConf {
     /**
      * Returns HitBTC API URL.
      *
-     * @param bool $isDemoAPI Demo API flag.
+     * @param int $apiVersion API version number
+     * @param bool $isDemoAPI Demo API flag
      *
      * @return string HitBTC API URL
      */
