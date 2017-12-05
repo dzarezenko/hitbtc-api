@@ -4,7 +4,7 @@ PHP wrapper for the HitBTC API
 [![Total Downloads](https://poser.pugx.org/dzarezenko/hitbtc-api/downloads)](https://packagist.org/packages/dzarezenko/hitbtc-api)
 [![License](https://poser.pugx.org/dzarezenko/hitbtc-api/license)](https://packagist.org/packages/dzarezenko/hitbtc-api)
 [![StyleCI](https://styleci.io/repos/108166351/shield)](https://styleci.io/repos/108166351)
-[![Code Climate](https://api.codeclimate.com/v1/badges/23ad0820390420f1340e/maintainability)](https://codeclimate.com/github/dzarezenko/hitbtc-api/maintainability)
+[![Maintainability](https://api.codeclimate.com/v1/badges/23ad0820390420f1340e/maintainability)](https://codeclimate.com/github/dzarezenko/hitbtc-api/maintainability)
 <span class="badge-bitcoin"><a href="https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=1DKLUPCWoLFje7RBWVpDZk1tXjyRKHFkQw" title="Donate once-off to this project using Bitcoin"><img src="https://img.shields.io/badge/bitcoin-donate-yellow.svg" alt="Bitcoin donate button" /></a></span>
 
 Requirements
