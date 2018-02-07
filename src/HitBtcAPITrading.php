@@ -93,6 +93,26 @@ class HitBtcAPITrading {
     }
 
     /**
+     * create a new order
+     *
+     * @param string $symbol is a currency symbol traded on HitBTC exchange
+     *           (see https://hitbtc.com/api#cursymbols)
+     * @param string $type sell/buy
+     * @param string $orderType limit, market, stopLimit, stopMarket
+     * @param string $price order price
+     * @param string $volume order quantity
+     * @param string $clientOrderId Unique order ID.
+     *
+     * @return json
+     */
+    public function addOrder($symbol, $type, $orderType, $price = null, $volume = null, $clientOrderId = null) {
+         $params = [ 'symbol' => $symbol, 'side' => $type, 'type' => $orderType ];
+         if (!empty($price)) $params['price'] = $price;
+         if (!empty($volume)) $params['quantity'] = $volume;
+         return $this->_request('order', $clientOrderId ? "order/{$clientOrderId}" : null, $params, true);
+    }
+
+    /**
      * JSON request functionality wrapper.
      *
      * @param string $method API method name
@@ -100,12 +120,12 @@ class HitBtcAPITrading {
      *
      * @return array JSON data.
      */
-    private function _request($method, $request = null, $params = []) {
+    private function _request($method, $request = null, $params = [], $post = false) {
         if (is_null($request)) {
             $request = $method;
         }
 
-        $response = $this->request->exec($request, $params);
+        $response = $this->request->exec($request, $params, $post ? 'POST' : 'GET');
 
         if (isset($response[$method])) {
             return $response[$method];
