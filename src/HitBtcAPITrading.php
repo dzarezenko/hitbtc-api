@@ -93,23 +93,41 @@ class HitBtcAPITrading {
     }
 
     /**
-     * create a new order
+     * create a new buy order at the market price (or other option from $optional['orderType']: limit, stopLimit, stopMarket)
      *
-     * @param string $symbol is a currency symbol traded on HitBTC exchange
+     * @param string $currency is a currency symbol traded on HitBTC exchange
      *           (see https://hitbtc.com/api#cursymbols)
-     * @param string $type sell/buy
-     * @param string $orderType limit, market, stopLimit, stopMarket
-     * @param string $price order price
-     * @param string $volume order quantity
-     * @param string $clientOrderId Unique order ID.
+     * @param string $rate order price
+     * @param string $amount order quantity
+     * @param array $optional Optional parameters array.
      *
      * @return json
      */
-    public function addOrder($symbol, $type, $orderType, $price = null, $volume = null, $clientOrderId = null) {
-         $params = [ 'symbol' => $symbol, 'side' => $type, 'type' => $orderType ];
-         if (!empty($price)) $params['price'] = $price;
-         if (!empty($volume)) $params['quantity'] = $volume;
-         return $this->_request('order', $clientOrderId ? "order/{$clientOrderId}" : null, $params, true);
+    public function buy($currency, $type, $rate = null, $amount = null, $optional = []) {
+         $params = [ 'symbol' => $currency, 'side' => 'buy', 'type' => 'market' ];
+         if (!empty($rate)) $params['price'] = $rate;
+         if (!empty($amount)) $params['quantity'] = $amount;
+         if (!empty($optional['orderType'])) $params['type'] = $optional['orderType'];
+         return $this->_request('order', $optional['clientOrderId'] ? "order/{$clientOrderId}" : null, $params, true);
+    }
+
+    /**
+     * create a new sell order at the market price (or other option from $optional['orderType']: limit, stopLimit, stopMarket)
+     *
+     * @param string $currency is a currency symbol traded on HitBTC exchange
+     *           (see https://hitbtc.com/api#cursymbols)
+     * @param string $rate order price
+     * @param string $amount order quantity
+     * @param array $optional Optional parameters array.
+     *
+     * @return json
+     */
+    public function sell($currency, $type, $rate = null, $amount = null, $optional = []) {
+         $params = [ 'symbol' => $currency, 'side' => 'sell', 'type' => 'market' ];
+         if (!empty($rate)) $params['price'] = $rate;
+         if (!empty($amount)) $params['quantity'] = $amount;
+         if (!empty($optional['orderType'])) $params['type'] = $optional['orderType'];
+         return $this->_request('order', $optional['clientOrderId'] ? "order/{$clientOrderId}" : null, $params, true);
     }
 
     /**
