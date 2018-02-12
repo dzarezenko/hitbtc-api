@@ -108,7 +108,7 @@ class HitBtcAPITrading {
          if (!empty($rate)) $params['price'] = $rate;
          if (!empty($amount)) $params['quantity'] = $amount;
          if (!empty($optional['orderType'])) $params['type'] = $optional['orderType'];
-         return $this->_request('order', $optional['clientOrderId'] ? "order/{$clientOrderId}" : null, $params, true);
+         return $this->_request('order', $optional['clientOrderId'] ? "order/{$clientOrderId}" : null, $params, 'POST');
     }
 
     /**
@@ -123,11 +123,11 @@ class HitBtcAPITrading {
      * @return json
      */
     public function sell($currency, $type, $rate = null, $amount = null, $optional = []) {
-         $params = [ 'symbol' => $currency, 'side' => 'sell', 'type' => 'market' ];
+         $params = ['symbol' => $currency, 'side' => 'sell', 'type' => 'market'];
          if (!empty($rate)) $params['price'] = $rate;
          if (!empty($amount)) $params['quantity'] = $amount;
          if (!empty($optional['orderType'])) $params['type'] = $optional['orderType'];
-         return $this->_request('order', $optional['clientOrderId'] ? "order/{$clientOrderId}" : null, $params, true);
+         return $this->_request('order', $optional['clientOrderId'] ? "order/{$clientOrderId}" : null, $params, 'POST');
     }
 
     /**
@@ -135,15 +135,16 @@ class HitBtcAPITrading {
      *
      * @param string $method API method name
      * @param string $request API request
+     * @param string $httpmethod GET or POST
      *
      * @return array JSON data.
      */
-    private function _request($method, $request = null, $params = [], $post = false) {
+    private function _request($method, $request = null, $params = [], $httpmethod = 'GET') {
         if (is_null($request)) {
             $request = $method;
         }
 
-        $response = $this->request->exec($request, $params, $post ? 'POST' : 'GET');
+        $response = $this->request->exec($request, $params, $httpmethod);
 
         if (isset($response[$method])) {
             return $response[$method];
