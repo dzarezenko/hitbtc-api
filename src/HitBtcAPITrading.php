@@ -106,6 +106,7 @@ class HitBtcAPITrading {
      */
     public function buy($currency, $amount, $rate = null, $optional = []) {
          $optional['side'] = 'buy';
+
          return $this->addOrder($currency, $amount, $rate, $optional);
     }
 
@@ -123,6 +124,7 @@ class HitBtcAPITrading {
      */
     public function sell($currency, $amount, $rate = null, $optional = []) {
          $optional['side'] = 'sell';
+
          return $this->addOrder($currency, $amount, $rate, $optional);
     }
 
