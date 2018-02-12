@@ -116,7 +116,7 @@ class HitBtcAPIPublic {
      */
     public function getOrderBook($symbol, $formatPrice = "string", $formatAmount = "string", $formatAmountUnit = "currency") {
         return $this->_request('orderbook',
-            "{$symbol}/orderbook"
+            ($this->apiVersion == 1 ? "{$symbol}/orderbook" : "orderbook/{$symbol}")
                 . "?format_price={$formatPrice}"
                 . "&format_amount={$formatAmount}"
                 . "&format_amount_unit={$formatAmountUnit}"
