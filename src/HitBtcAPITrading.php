@@ -94,7 +94,7 @@ class HitBtcAPITrading {
 
     /**
      * create a new buy order at the market price
-     * (or other option from $optional['type']: limit, stopLimit, stopMarket)
+     * (or other option from $optional['type']: limit, stopLimit, stopMarket).
      *
      * @param string $currency is a currency symbol traded on HitBTC exchange
      *           (see https://hitbtc.com/api#cursymbols)
@@ -106,12 +106,12 @@ class HitBtcAPITrading {
      */
     public function buy($currency, $amount, $rate = null, $optional = []) {
          $optional['side'] = 'buy';
-         return $this->addOrder($optional);
+         return $this->addOrder($currency, $amount, $rate, $optional);
     }
 
     /**
      * create a new sell order at the market price
-     * (or other option from $optional['type']: limit, stopLimit, stopMarket)
+     * (or other option from $optional['type']: limit, stopLimit, stopMarket).
      *
      * @param string $currency is a currency symbol traded on HitBTC exchange
      *           (see https://hitbtc.com/api#cursymbols)
@@ -123,11 +123,12 @@ class HitBtcAPITrading {
      */
     public function sell($currency, $amount, $rate = null, $optional = []) {
          $optional['side'] = 'sell';
-         return $this->addOrder($optional);
+         return $this->addOrder($currency, $amount, $rate, $optional);
     }
 
     /**
-     * create a new order at the market price
+     * create a new order at the market price.
+     *
      * @param string $currency is a currency symbol traded on HitBTC exchange
      *           (see https://hitbtc.com/api#cursymbols)
      * @param string $amount order quantity
@@ -141,6 +142,7 @@ class HitBtcAPITrading {
          $optional['quantity'] = $amount;
          if (empty($params['type'])) $params['type'] = 'market';
          if (!empty($rate)) $params['price'] = $rate;
+
          return $this->request('order', $optional['clientOrderId'] ? 'order/' . $optional['clientOrderId'] : null, $params, 'POST');
     }
 
