@@ -140,14 +140,20 @@ class HitBtcAPITrading {
      * @return json
      */
     public function addOrder($currency, $amount, $rate = null, $params = []) {
-         $optional['symbol'] = $currency;
-         $optional['quantity'] = $amount;
+         $params['symbol'] = $currency;
+         $params['quantity'] = $amount;
          if (empty($params['type'])) $params['type'] = 'market';
          if (!empty($rate)) $params['price'] = $rate;
 
          return $this->request('order', $optional['clientOrderId'] ? 'order/' . $optional['clientOrderId'] : null, $params, 'POST');
     }
-
+    
+    /**
+     * Closes all orders in status new or partiallyFilled.
+     */
+    public function cancelAllOrders() {
+         return $this->request('order', null, [], 'DELETE');
+    }
     /**
      * JSON request functionality wrapper.
      *
