@@ -108,10 +108,11 @@ class Request {
             curl_setopt(self::$ch, CURLOPT_POST, true);
             curl_setopt(self::$ch, CURLOPT_POSTFIELDS, $params);
         }
-        
+
         if ($method === 'DELETE') {
             curl_setopt(self::$ch, CURLOPT_CUSTOMREQUEST, "DELETE");
         }
+
         curl_setopt(self::$ch, CURLOPT_HTTPHEADER, [
             'X-Signature: ' . strtolower(hash_hmac('sha512', $requestUri . (($method === 'POST') ? $params : ''), $this->apiSecret))
         ]);

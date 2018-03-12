@@ -129,25 +129,29 @@ class HitBtcAPITrading {
     }
 
     /**
-     * create a new order at the market price.
+     * Create a new order at the market price.
      *
      * @param string $currency is a currency symbol traded on HitBTC exchange
      *           (see https://hitbtc.com/api#cursymbols)
      * @param string $amount order quantity
      * @param string $rate order price
-     * @param array $args parameters array.
+     * @param array $params parameters array.
      *
      * @return json
      */
     public function addOrder($currency, $amount, $rate = null, $params = []) {
-         $params['symbol'] = $currency;
-         $params['quantity'] = $amount;
-         if (empty($params['type'])) $params['type'] = 'market';
-         if (!empty($rate)) $params['price'] = $rate;
+        $params['symbol'] = $currency;
+        $params['quantity'] = $amount;
+        if (empty($params['type'])) {
+            $params['type'] = 'market';
+        }
+        if (!empty($rate)) {
+            $params['price'] = $rate;
+        }
 
-         return $this->request('order', $optional['clientOrderId'] ? 'order/' . $optional['clientOrderId'] : null, $params, 'POST');
+        return $this->request('order', $optional['clientOrderId'] ? 'order/' . $optional['clientOrderId'] : null, $params, 'POST');
     }
-    
+
     /**
      * Closes all orders in status new or partiallyFilled.
      */
