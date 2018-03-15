@@ -149,7 +149,7 @@ class HitBtcAPITrading {
             $params['price'] = $rate;
         }
 
-        return $this->request('order', $optional['clientOrderId'] ? 'order/' . $optional['clientOrderId'] : null, $params, 'POST');
+        return $this->request('order', null, $params, 'POST');
     }
 
     /**
